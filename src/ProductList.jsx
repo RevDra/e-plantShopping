@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addItem } from './CartSlice';
-import { Link } from 'react-router-dom';
+import CartItem from './CartItem';
 import './App.css';
 
 const plantsArray = [
@@ -17,18 +17,7 @@ const plantsArray = [
     ]
   },
   {
-    category: "Easy Care Plants",
-    plants: [
-      { name: "Pothos", image: "https://images.unsplash.com/photo-1597055181300-e3633a207519?q=80&w=1000&auto=format&fit=crop", cost: 12 },
-      { name: "ZZ Plant", image: "https://images.unsplash.com/photo-1632207691143-643e2a9a9361?q=80&w=1000&auto=format&fit=crop", cost: 40 },
-      { name: "Jade Plant", image: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?q=80&w=1000&auto=format&fit=crop", cost: 20 },
-      { name: "Cast Iron Plant", image: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?q=80&w=1000&auto=format&fit=crop", cost: 45 },
-      { name: "Philodendron", image: "https://images.unsplash.com/photo-1512429234300-1c0286887295?q=80&w=1000&auto=format&fit=crop", cost: 28 },
-      { name: "Swiss Cheese Plant", image: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?q=80&w=1000&auto=format&fit=crop", cost: 50 }
-    ]
-  },
-  {
-    category: "Fragrant Plants",
+    category: "Aromatic Fragrant Plants",
     plants: [
       { name: "Jasmine", image: "https://images.unsplash.com/photo-1592729645009-b96d1e63d14b?q=80&w=1000&auto=format&fit=crop", cost: 32 },
       { name: "Lavender", image: "https://images.unsplash.com/photo-1520903074185-8ec362b39c67?q=80&w=1000&auto=format&fit=crop", cost: 18 },
@@ -37,61 +26,92 @@ const plantsArray = [
       { name: "Mint", image: "https://images.unsplash.com/photo-1607013142842-16dc2c82c270?q=80&w=1000&auto=format&fit=crop", cost: 10 },
       { name: "Lemon Balm", image: "https://images.unsplash.com/photo-1533934191487-19379183bb76?q=80&w=1000&auto=format&fit=crop", cost: 14 }
     ]
+  },
+  {
+    category: "Low Maintenance Plants",
+    plants: [
+      { name: "Pothos", image: "https://images.unsplash.com/photo-1597055181300-e3633a207519?q=80&w=1000&auto=format&fit=crop", cost: 12 },
+      { name: "ZZ Plant", image: "https://images.unsplash.com/photo-1632207691143-643e2a9a9361?q=80&w=1000&auto=format&fit=crop", cost: 40 },
+      { name: "Jade Plant", image: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?q=80&w=1000&auto=format&fit=crop", cost: 20 },
+      { name: "Cast Iron Plant", image: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?q=80&w=1000&auto=format&fit=crop", cost: 45 },
+      { name: "Philodendron", image: "https://images.unsplash.com/photo-1512429234300-1c0286887295?q=80&w=1000&auto=format&fit=crop", cost: 28 },
+      { name: "Snake Plant 'Laurentii'", image: "https://images.unsplash.com/photo-1593482892290-f54927ae1bf6?q=80&w=1000&auto=format&fit=crop", cost: 25 }
+    ]
   }
 ];
 
-const ProductList = () => {
-  const dispatch = useDispatch();
+const ProductList = ({ setShowProductList }) => {
+  const [showCart, setShowCart] = useState(false);
   const cartItems = useSelector(state => state.cart.items);
+  const dispatch = useDispatch();
 
-  const isItemInCart = (name) => {
-    return cartItems.some(item => item.name === name);
-  };
+  const totalCartItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const handleAddToCart = (plant) => {
     dispatch(addItem(plant));
   };
 
-  const totalCartItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const isItemInCart = (name) => {
+    return cartItems.some(item => item.name === name);
+  };
+
+  const handleCartClick = (e) => {
+    e.preventDefault();
+    setShowCart(true);
+  };
+
+  const handlePlantsClick = (e) => {
+    e.preventDefault();
+    setShowCart(false);
+  };
+
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    setShowProductList(false);
+  };
 
   return (
     <div>
       <nav className="navbar">
-        <div className="navbar-logo">
-          <Link to="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.5rem' }}>Paradise Nursery</Link>
+        <div className="navbar-logo" onClick={handleHomeClick}>
+          Paradise Nursery
         </div>
         <div className="navbar-links">
-          <Link to="/">Home</Link>
-          <Link to="/products">Plants</Link>
-          <Link to="/cart" className="cart-icon">
+          <a href="#" className="navbar-link" onClick={handleHomeClick}>Home</a>
+          <a href="#" className="navbar-link" onClick={handlePlantsClick}>Plants</a>
+          <div className="cart-icon" onClick={handleCartClick}>
             🛒 <span className="cart-count">{totalCartItems}</span>
-          </Link>
+          </div>
         </div>
       </nav>
 
-      <div className="product-list">
-        {plantsArray.map((categoryGroup, index) => (
-          <div key={index}>
-            <h2 style={{ textAlign: 'center', margin: '30px 0' }}>{categoryGroup.category}</h2>
-            <div className="product-grid">
-              {categoryGroup.plants.map((plant, plantIndex) => (
-                <div key={plantIndex} className="product-card">
-                  <img src={plant.image} alt={plant.name} />
-                  <h3>{plant.name}</h3>
-                  <p>${plant.cost}</p>
-                  <button
-                    className="add-to-cart-btn"
-                    disabled={isItemInCart(plant.name)}
-                    onClick={() => handleAddToCart(plant)}
-                  >
-                    {isItemInCart(plant.name) ? 'Added to Cart' : 'Add to Cart'}
-                  </button>
-                </div>
-              ))}
+      {showCart ? (
+        <CartItem onContinueShopping={() => setShowCart(false)} />
+      ) : (
+        <div className="product-list">
+          {plantsArray.map((categoryGroup, index) => (
+            <div key={index}>
+              <h2 className="category-title">{categoryGroup.category}</h2>
+              <div className="product-grid">
+                {categoryGroup.plants.map((plant, plantIndex) => (
+                  <div key={plantIndex} className="product-card">
+                    <img src={plant.image} alt={plant.name} />
+                    <h3>{plant.name}</h3>
+                    <p className="price">${plant.cost}</p>
+                    <button
+                      className="add-to-cart-btn"
+                      disabled={isItemInCart(plant.name)}
+                      onClick={() => handleAddToCart(plant)}
+                    >
+                      {isItemInCart(plant.name) ? 'Added' : 'Add to Cart'}
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

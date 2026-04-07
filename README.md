@@ -1,4 +1,4 @@
-# Paradise Nursery
+# e-plantShopping
 
 Paradise Nursery is a premier online shop for high-quality houseplants. We offer a wide variety of plants to suit every home and skill level, from easy-care succulents to exotic tropicals.
 
@@ -13,5 +13,4 @@ Paradise Nursery is a premier online shop for high-quality houseplants. We offer
 
 - **React**: For building the user interface.
 - **Redux Toolkit**: For state management of the shopping cart.
-- **React Router DOM**: For navigation between pages.
 - **Vite**: For a fast development environment and build process.
